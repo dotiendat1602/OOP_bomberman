@@ -1,30 +1,55 @@
 package uet.oop.bomberman.entities;
 
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.graphics.Screen;
+import uet.oop.bomberman.Level.Coordinates;
 
 public abstract class Entity {
     //Tọa độ X tính từ góc trái trên trong Canvas
-    protected int x;
+    protected double x;
 
     //Tọa độ Y tính từ góc trái trên trong Canvas
-    protected int y;
+    protected double y;
 
-    protected Image img;
+    protected boolean removed = false;
 
-    //Khởi tạo đối tượng, chuyển từ tọa độ đơn vị sang tọa độ trong canvas
-    public Entity( int xUnit, int yUnit, Image img) {
-        this.x = xUnit * Sprite.SCALED_SIZE;
-        this.y = yUnit * Sprite.SCALED_SIZE;
-        this.img = img;
-    }
+    // Hình ảnh của entity
+    protected Sprite sprite;
 
-    public void render(GraphicsContext gc) {
-        gc.drawImage(img, x, y);
-    }
+
     public abstract void update();
+
+    public abstract void render(Screen screen);
+
+    public void remove() {
+        removed = true;
+    }
+
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
+
+    public abstract boolean collide(Entity e);
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+
+    // Chuyển tọa độ từ pixel sang các ô trên map
+    public int getXTile() {
+        return Coordinates.pixelToTile(x + (double) sprite.SIZE / 2);
+    }
+
+    public int getYTile() {
+        return Coordinates.pixelToTile(y - (double) sprite.SIZE / 2);
+    }
 }
