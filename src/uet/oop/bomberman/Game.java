@@ -1,8 +1,9 @@
 package uet.oop.bomberman;
 
+import uet.oop.bomberman.GUI.Frame;
+import uet.oop.bomberman.graphics.Screen;
 import uet.oop.bomberman.Input.Keyboard;
 import uet.oop.bomberman.Sound.Sound;
-import uet.oop.bomberman.graphics.Screen;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -10,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 public class Game extends Canvas {
-    // Thông số game
+    //Thông số game
     public static final String TITLE = "Bomberman";
     public static final int TILE_SIZE = 16;
     public static final int WIDTH = TILE_SIZE * (31 / 2), HEIGHT = 13 * TILE_SIZE;
@@ -20,6 +21,7 @@ public class Game extends Canvas {
     private static final int BOMB_RATE = 1;
     private static final int BOMB_RADIUS = 1;
     private static final double BOMBER_SPEED = 1.0;
+
 
     //Thông số mặc định của game
     public static final int TIME = 200;
@@ -32,6 +34,7 @@ public class Game extends Canvas {
     protected static int bombRate = BOMB_RATE;
     protected static int bombRadius = BOMB_RADIUS;
     protected static double bomberSpeed = BOMBER_SPEED;
+
 
     //Thời gian trong một level
     protected int screenDelay = SCREEN_DELAY;
@@ -65,6 +68,98 @@ public class Game extends Canvas {
         addKeyListener(input);
     }
 
+    //Render game, cài đặt để tạo ra FPS lớn nhất có thể tương thích với máy
+    private void renderGame() {
+        BufferStrategy bs = getBufferStrategy();
+        if (bs == null) {
+            createBufferStrategy(3);
+            return;
+        }
+
+        screen.clear();
+        board.render(screen);
+
+        System.arraycopy(screen.pixels, 0, pixels, 0, pixels.length);
+
+        Graphics g = bs.getDrawGraphics();
+        g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+
+        g.dispose();
+        bs.show();
+    }
+
+    private void renderScreen() {
+        BufferStrategy bs = getBufferStrategy();
+        if (bs == null) {
+            createBufferStrategy(3);
+            return;
+        }
+
+        screen.clear();
+
+        Graphics g = bs.getDrawGraphics();
+        board.drawScreen(g);
+
+        g.dispose();
+        bs.show();
+    }
+
+    //Update các thông số game
+    private void update() {
+        input.update();
+        board.update();
+    }
+
+    //Start game
+    public void start() {
+        playMusic(0);
+
+        running = true;
+
+        long lastTime = System.nanoTime();
+        long timer = System.currentTimeMillis();
+        final double nps = 1000000000.0 / 60.0;
+        double delta = 0;
+        int frames = 0, updates = 0;
+
+        requestFocus();
+
+        while (running) {
+            long now = System.nanoTime();
+            delta += (now - lastTime) / nps;
+            lastTime = now;
+            while (delta > 1) {
+                update();
+                updates++;
+                delta--;
+            }
+
+            if (paused) {
+                if (screenDelay <= 0) {
+                    board.setShow(-1);
+                    paused = false;
+                }
+                renderScreen();
+            } else renderGame();
+
+            frames++;
+
+            if (System.currentTimeMillis() - timer > 1000) {
+                frame.setTime(board.subtractTime());
+                frame.setPoints(board.getPoints());
+                frame.setLives(board.getLives());
+
+                timer += 1000;
+
+                this.frame.setTitle("Bomberman" + " | " + updates + " rate, " + frames + " fps");
+                updates = 0;
+                frames = 0;
+
+                if (this.board.getShow() == 2) screenDelay--;
+            }
+        }
+    }
+
     public static int getBombRate() {
         return bombRate;
     }
@@ -75,18 +170,6 @@ public class Game extends Canvas {
 
     public static double getBomberSpeed() {
         return bomberSpeed;
-    }
-
-    public static void addBomberSpeed(double i) {
-        bomberSpeed += i;
-    }
-
-    public static void addBombRadius(int i) {
-        bombRadius += i;
-    }
-
-    public static void addBombRate(int i) {
-        bombRate += i;
     }
 
     public void resetScreenDelay() {
