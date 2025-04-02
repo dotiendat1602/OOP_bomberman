@@ -1,6 +1,12 @@
 package uet.oop.bomberman.Level;
 
 import uet.oop.bomberman.Board;
+import uet.oop.bomberman.entities.Characters.Bomber;
+import uet.oop.bomberman.entities.Tile.Grass;
+import uet.oop.bomberman.entities.Tile.Portal;
+import uet.oop.bomberman.entities.Tile.Wall;
+import uet.oop.bomberman.Game;
+import uet.oop.bomberman.graphics.Sprite;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -34,14 +40,67 @@ public class FileLevelLoader {
 
             int rowNum = 0;
             while ((line = br.readLine()) != null) {
-                for (int i = 0; i < line.length(); i++) map[i][rowNum] = line.charAt(i);
+                for (int i = 0; i < line.length(); i++) {
+                    map[i][rowNum] = line.charAt(i);
+                }
                 rowNum++;
             }
 
             stream.close();
             br.close();
         } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Không tìm thấy file map");
             e.printStackTrace();
+        }
+    }
+
+    public void createEntities() {
+        Game.levelHeight = height;
+        Game.levelWidth = width;
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int pos = x + y * width;
+                System.out.print(map[x][y]);
+                switch (map[x][y]) {
+                    case 'p' -> {
+                        board.addEntity(pos, new Grass(x, y, Sprite.grass));
+                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                    }
+                    case '#' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
+                    case '*' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
+                    case 'x' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
+                    case 'b' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
+                    case 'f' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
+                    case 's' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
+                    case '1' -> {
+                        board.addEntity(pos, new Grass(x, y, Sprite.grass));
+//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                    }
+                    case '2' -> {
+                        board.addEntity(pos, new Grass(x, y, Sprite.grass));
+//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                    }
+                    case '3' -> {
+                        board.addEntity(pos, new Grass(x, y, Sprite.grass));
+//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                    }
+                    case '4' -> {
+                        board.addEntity(pos, new Grass(x, y, Sprite.grass));
+//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                    }
+                    case '5' -> {
+                        board.addEntity(pos, new Grass(x, y, Sprite.grass));
+//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                    }
+                    case '6' -> {
+                        board.addEntity(pos, new Grass(x, y, Sprite.grass));
+//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                    }
+                    default -> board.addEntity(pos, new Grass(x, y, Sprite.grass));
+                }
+            }
+            System.out.println();
         }
     }
 
