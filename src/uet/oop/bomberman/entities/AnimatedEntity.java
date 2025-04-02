@@ -1,6 +1,6 @@
 package uet.oop.bomberman.entities;
 
-public class AnimatedEntity {
+public abstract class AnimatedEntity extends Entity {
     protected int animate = 0;
     protected final int MAX_ANIMATE = 7500;
 
