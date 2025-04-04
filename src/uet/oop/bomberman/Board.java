@@ -1,5 +1,6 @@
 package uet.oop.bomberman;
 
+import uet.oop.bomberman.entities.Bomb.Bomb;
 import uet.oop.bomberman.entities.Characters.Character;
 
 import uet.oop.bomberman.Level.FileLevelLoader;
@@ -19,6 +20,8 @@ public class Board {
     protected Screen screen;
 
     public Entity[] entities;
+
+    protected List<Bomb> bombs = new ArrayList<>();
     public List<Character> characters = new ArrayList<>();
 
     private int screenToShow = -1;
@@ -41,6 +44,7 @@ public class Board {
         if (game.isPaused()) return;
 
         updateEntities();
+        updateBombs();
         updateCharacters();
         detectEndGame();
 
@@ -61,7 +65,7 @@ public class Board {
         for (int y = y0; y < y1; y++)
             for (int x = x0; x < x1; x++) entities[x + y * fileLevelLoader.getWidth()].render(screen);
 
-
+        renderBombs(screen);
         renderCharacter(screen);
     }
 
@@ -75,6 +79,7 @@ public class Board {
         game.resetScreenDelay();
         game.pause();
         characters.clear();
+        bombs.clear();
 
         Screen.setOffset(0, 0);
         Game.playSE(7);
@@ -166,9 +171,17 @@ public class Board {
         characters.add(e);
     }
 
+    public void addBomb(Bomb e) {
+        bombs.add(e);
+    }
+
 
     protected void renderCharacter(Screen screen) {
         for (Character character : characters) character.render(screen);
+    }
+
+    protected void renderBombs(Screen screen) {
+        for (Bomb bomb : bombs) bomb.render(screen);
     }
 
 
@@ -183,6 +196,11 @@ public class Board {
         while (itr.hasNext() && !game.isPaused()) itr.next().update();
     }
 
+    protected void updateBombs() {
+        if (game.isPaused()) return;
+        for (Bomb bomb : bombs) bomb.update();
+    }
+
 
     public int subtractTime() {
         if (game.isPaused()) return this.time;
@@ -191,6 +209,20 @@ public class Board {
 
     public Keyboard getInput() {
         return input;
+    }
+
+    public List<Bomb> getBombs() {
+        return bombs;
+    }
+
+    public Bomb getBombAt(double x, double y) {
+        Iterator<Bomb> bs = bombs.iterator();
+        Bomb b;
+        while (bs.hasNext()) {
+            b = bs.next();
+            if (b.getX() == (int) x && b.getY() == (int) y) return b;
+        }
+        return null;
     }
 
     public FileLevelLoader getLevel() {

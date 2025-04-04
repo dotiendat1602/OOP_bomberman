@@ -172,6 +172,10 @@ public class Game extends Canvas {
         return bomberSpeed;
     }
 
+    public static void addBombRate(int i) {
+        bombRate += i;
+    }
+
     public void resetScreenDelay() {
         screenDelay = SCREEN_DELAY;
     }

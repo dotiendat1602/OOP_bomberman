@@ -2,6 +2,7 @@ package uet.oop.bomberman.entities.Characters;
 
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.Bomb.Bomb;
 import uet.oop.bomberman.Game;
 import uet.oop.bomberman.entities.Tile.Wall;
 import uet.oop.bomberman.graphics.Screen;
@@ -9,42 +10,49 @@ import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.Input.Keyboard;
 import uet.oop.bomberman.Level.Coordinates;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
 public class Bomber extends Character {
-    protected Keyboard input;
+    private final Keyboard input;
 
-    private boolean render = true;
+    protected int timeBetweenPutBombs = 0;
+    private final List<Bomb> bombs;
     private final int maxSteps;
+    private boolean render = true;
 
     public Bomber(int x, int y, Board board) {
         super(x, y, board);
-        timeAfter = 250;
-        input = this.board.getInput();
-        sprite = Sprite.player_right;
-        maxSteps = (int) Math.round(Game.TILE_SIZE / Game.getBomberSpeed());
+        bombs = board.getBombs();
+        this.input = board.getInput();
+        this.sprite = Sprite.player_right;
+        this.maxSteps = (int) Math.round(Game.TILE_SIZE / Game.getBomberSpeed());
+        this.timeAfter = 250;
     }
 
     @Override
     public void update() {
         animate();
+        clearBombs();
+        if (timeBetweenPutBombs < -7500) {
+            timeBetweenPutBombs = 0;
+        }
+        else {
+            timeBetweenPutBombs--;
+        }
         calculateMove();
+        detectPlaceBomb();
     }
-
 
     @Override
     public void render(Screen screen) {
         calculateXOffset();
-        if (alive) chooseSprite();
-        else sprite = Sprite.movingSprite(Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3, animate, 60);
+        sprite = alive ? chooseSprite() : Sprite.movingSprite(Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3, animate, 60);
         if (render) screen.renderEntity((int) x, (int) y - sprite.SIZE, this);
     }
 
-    public void calculateXOffset() {
-        int xScroll = Screen.calculateXOffset(board, this);
-        Screen.setOffset(xScroll, 0);
+    private void calculateXOffset() {
+        Screen.setOffset(Screen.calculateXOffset(board, this), 0);
     }
 
     @Override
@@ -55,19 +63,34 @@ public class Bomber extends Character {
     @Override
     protected void calculateMove() {
         double xa = 0, ya = 0;
+
         if (input.up) ya--;
         if (input.down) ya++;
         if (input.left) xa--;
         if (input.right) xa++;
 
-        if (xa != 0 || ya != 0) {
-            move(x + xa * Game.getBomberSpeed(), y + ya * Game.getBomberSpeed());
-            moving = true;
+        moving = xa != 0 || ya != 0;
+        if (moving) move(x + xa * Game.getBomberSpeed(), y + ya * Game.getBomberSpeed());
+    }
+
+    @Override
+    public void move(double xa, double ya) {
+        direct = getDirection(xa, ya);
+
+        if (canMove(xa, ya)) {
+            x = xa;
+            y = ya;
         } else {
-            moving = false;
+            soften(xa, ya);
         }
     }
 
+    private int getDirection(double xa, double ya) {
+        if (y < ya) return 2;
+        if (y > ya) return 0;
+        if (x > xa) return 3;
+        return 4;
+    }
 
     private void soften(double xa, double ya) {
         if (xa != x && y == ya) {
@@ -109,77 +132,61 @@ public class Bomber extends Character {
     }
 
     @Override
-    public void move(double xa, double ya) {
-        if (y < ya) direct = 2;
-        if (y > ya) direct = 0;
-        if (x > xa) direct = 3;
-        if (x < xa) direct = 4;
-        if (canMove(xa, ya)) {
-            x = xa;
-            y = ya;
-        } else soften(xa, ya);
-    }
-
-    @Override
-    public void kill() {
-
-    }
-
-    @Override
-    protected void afterKill() {
-
-    }
-
-    @Override
     public boolean canMove(double x, double y) {
-        double loLy = y - 1;
-        double loRy = y - 1;
-        double upLy = y + 1 - Game.TILE_SIZE;
-        double upRy = y + 1 - Game.TILE_SIZE;
-        double upLx = x + 1;
-        double loLx = x + 1;
-        double upRx = x - 1 + (double) Game.TILE_SIZE * 3 / 4;
-        double loRx = x - 1 + (double) Game.TILE_SIZE * 3 / 4;
+        int[][] points = {
+                {Coordinates.pixelToTile(x + 1), Coordinates.pixelToTile(y + 1 - Game.TILE_SIZE)},  // Top-left
+                {Coordinates.pixelToTile(x - 1 + (Game.TILE_SIZE * 3 / 4)), Coordinates.pixelToTile(y + 1 - Game.TILE_SIZE)}, // Top-right
+                {Coordinates.pixelToTile(x + 1), Coordinates.pixelToTile(y - 1)},  // Bottom-left
+                {Coordinates.pixelToTile(x - 1 + (Game.TILE_SIZE * 3 / 4)), Coordinates.pixelToTile(y - 1)} // Bottom-right
+        };
 
-        int tile_UpLx = Coordinates.pixelToTile(upLx);
-        int tile_UpLy = Coordinates.pixelToTile(upLy);
+        for (int[] p : points) {
+            Entity entity = board.getEntity(p[0], p[1], this);
+            if (entity instanceof Wall) return false;
+        }
 
-        int tile_UpRx = Coordinates.pixelToTile(upRx);
-        int tile_UpRy = Coordinates.pixelToTile(upRy);
-
-        int tile_LoLx = Coordinates.pixelToTile(loLx);
-        int tile_LoLy = Coordinates.pixelToTile(loLy);
-
-        int tile_LoRx = Coordinates.pixelToTile(loRx);
-        int tile_LoRy = Coordinates.pixelToTile(loRy);
-
-        Entity entity_UpLeft = board.getEntity(tile_UpLx, tile_UpLy, this);
-        Entity entity_UpRight = board.getEntity(tile_UpRx, tile_UpRy, this);
-        Entity entity_LoLeft = board.getEntity(tile_LoLx, tile_LoLy, this);
-        Entity entity_LoRight = board.getEntity(tile_LoRx, tile_LoRy, this);
-        if (entity_LoLeft instanceof Wall || entity_LoRight instanceof Wall || entity_UpLeft instanceof Wall || entity_UpRight instanceof Wall) return false;
         return true;
     }
 
+    private Sprite chooseSprite() {
+        return switch (direct) {
+            case 0 -> moving ? Sprite.movingSprite(Sprite.player_up_1, Sprite.player_up_2, animate, 20) : Sprite.player_up;
+            case 2 -> moving ? Sprite.movingSprite(Sprite.player_down_1, Sprite.player_down_2, animate, 20) : Sprite.player_down;
+            case 3 -> moving ? Sprite.movingSprite(Sprite.player_left_1, Sprite.player_left_2, animate, 20) : Sprite.player_left;
+            default -> moving ? Sprite.movingSprite(Sprite.player_right_1, Sprite.player_right_2, animate, 20) : Sprite.player_right;
+        };
+    }
 
-    private void chooseSprite() {
-        switch (direct) {
-            case 0 -> {
-                sprite = Sprite.player_up;
-                if (moving) sprite = Sprite.movingSprite(Sprite.player_up_1, Sprite.player_up_2, animate, 20);
-            }
-            case 2 -> {
-                sprite = Sprite.player_down;
-                if (moving) sprite = Sprite.movingSprite(Sprite.player_down_1, Sprite.player_down_2, animate, 20);
-            }
-            case 3 -> {
-                sprite = Sprite.player_left;
-                if (moving) sprite = Sprite.movingSprite(Sprite.player_left_1, Sprite.player_left_2, animate, 20);
-            }
-            default -> {
-                sprite = Sprite.player_right;
-                if (moving) sprite = Sprite.movingSprite(Sprite.player_right_1, Sprite.player_right_2, animate, 20);
+    private void detectPlaceBomb() {
+        if (input.space && timeBetweenPutBombs < 0 && Game.getBombRate() > 0) {
+            timeBetweenPutBombs = 30;
+            placeBomb(Coordinates.pixelToTile(x + (double) Game.TILE_SIZE / 2), Coordinates.pixelToTile(y - (double) Game.TILE_SIZE / 2));
+        }
+    }
+
+    protected void placeBomb(int x, int y) {
+        Entity downThere = board.getEntity(x, y, this);
+        if (downThere instanceof Bomb) return;
+        board.addBomb(new Bomb(x, y, board));
+        Game.playSE(1);
+        Game.addBombRate(-1);
+    }
+
+    private void clearBombs() {
+        Iterator<Bomb> bs = bombs.iterator();
+        Bomb b;
+        while (bs.hasNext()) {
+            b = bs.next();
+            if (b.isRemoved()) {
+                bs.remove();
+                Game.addBombRate(1);
             }
         }
     }
+
+    @Override
+    public void kill() {}
+
+    @Override
+    protected void afterKill() {}
 }
