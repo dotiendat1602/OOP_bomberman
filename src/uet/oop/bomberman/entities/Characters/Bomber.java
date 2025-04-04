@@ -3,6 +3,7 @@ package uet.oop.bomberman.entities.Characters;
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.Game;
+import uet.oop.bomberman.entities.Tile.Wall;
 import uet.oop.bomberman.graphics.Screen;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.Input.Keyboard;
@@ -28,6 +29,7 @@ public class Bomber extends Character {
 
     @Override
     public void update() {
+        animate();
         calculateMove();
     }
 
@@ -129,7 +131,33 @@ public class Bomber extends Character {
     }
 
     @Override
-    protected boolean canMove(double x, double y) {
+    public boolean canMove(double x, double y) {
+        double loLy = y - 1;
+        double loRy = y - 1;
+        double upLy = y + 1 - Game.TILE_SIZE;
+        double upRy = y + 1 - Game.TILE_SIZE;
+        double upLx = x + 1;
+        double loLx = x + 1;
+        double upRx = x - 1 + (double) Game.TILE_SIZE * 3 / 4;
+        double loRx = x - 1 + (double) Game.TILE_SIZE * 3 / 4;
+
+        int tile_UpLx = Coordinates.pixelToTile(upLx);
+        int tile_UpLy = Coordinates.pixelToTile(upLy);
+
+        int tile_UpRx = Coordinates.pixelToTile(upRx);
+        int tile_UpRy = Coordinates.pixelToTile(upRy);
+
+        int tile_LoLx = Coordinates.pixelToTile(loLx);
+        int tile_LoLy = Coordinates.pixelToTile(loLy);
+
+        int tile_LoRx = Coordinates.pixelToTile(loRx);
+        int tile_LoRy = Coordinates.pixelToTile(loRy);
+
+        Entity entity_UpLeft = board.getEntity(tile_UpLx, tile_UpLy, this);
+        Entity entity_UpRight = board.getEntity(tile_UpRx, tile_UpRy, this);
+        Entity entity_LoLeft = board.getEntity(tile_LoLx, tile_LoLy, this);
+        Entity entity_LoRight = board.getEntity(tile_LoRx, tile_LoRy, this);
+        if (entity_LoLeft instanceof Wall || entity_LoRight instanceof Wall || entity_UpLeft instanceof Wall || entity_UpRight instanceof Wall) return false;
         return true;
     }
 
