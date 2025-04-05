@@ -1,6 +1,8 @@
 package uet.oop.bomberman;
 
 import uet.oop.bomberman.entities.Bomb.Bomb;
+import uet.oop.bomberman.entities.Bomb.FlameSegment;
+import uet.oop.bomberman.entities.Characters.Bomber;
 import uet.oop.bomberman.entities.Characters.Character;
 
 import uet.oop.bomberman.Level.FileLevelLoader;
@@ -143,7 +145,18 @@ public class Board {
 
     public Entity getEntity(double x, double y, Character m) {
         Entity res;
+
+        res = getFlameSegmentAt((int) x, (int) y);
+        if (res != null) return res;
+
+        res = getBombAt(x, y);
+        if (res != null) return res;
+
+        res = getCharacterAtExcluding((int) x, (int) y, m);
+        if (res != null) return res;
+
         res = getEntityAt((int) x, (int) y);
+
         return res;
     }
 
@@ -184,6 +197,17 @@ public class Board {
         for (Bomb bomb : bombs) bomb.render(screen);
     }
 
+    public FlameSegment getFlameSegmentAt(int x, int y) {
+        Iterator<Bomb> bs = bombs.iterator();
+        Bomb b;
+        while (bs.hasNext()) {
+            b = bs.next();
+            FlameSegment e = b.flameAt(x, y);
+            if (e != null) return e;
+        }
+        return null;
+    }
+
 
     protected void updateEntities() {
         if (game.isPaused()) return;
@@ -221,6 +245,16 @@ public class Board {
         while (bs.hasNext()) {
             b = bs.next();
             if (b.getX() == (int) x && b.getY() == (int) y) return b;
+        }
+        return null;
+    }
+
+    public Bomber getBomber() {
+        Iterator<Character> itr = characters.iterator();
+        Character cur;
+        while (itr.hasNext()) {
+            cur = itr.next();
+            if (cur instanceof Bomber) return (Bomber) cur;
         }
         return null;
     }
