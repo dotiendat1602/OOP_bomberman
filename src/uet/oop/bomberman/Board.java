@@ -32,6 +32,7 @@ public class Board {
     private int points = Game.POINTS;
     private int lives = Game.LIVES;
 
+
     private final char[][] map;
 
     public Board(Game game, Keyboard input, Screen screen) {
