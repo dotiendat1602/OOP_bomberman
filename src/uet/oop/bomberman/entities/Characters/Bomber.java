@@ -4,6 +4,10 @@ import uet.oop.bomberman.Board;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.Bomb.Bomb;
 import uet.oop.bomberman.Game;
+import uet.oop.bomberman.entities.LayeredEntity;
+import uet.oop.bomberman.entities.Tile.Destroyable.Brick;
+import uet.oop.bomberman.entities.Tile.Destroyable.DestroyableTile;
+import uet.oop.bomberman.entities.Tile.Portal;
 import uet.oop.bomberman.entities.Tile.Wall;
 import uet.oop.bomberman.graphics.Screen;
 import uet.oop.bomberman.graphics.Sprite;
@@ -75,21 +79,14 @@ public class Bomber extends Character {
 
     @Override
     public void move(double xa, double ya) {
-        direct = getDirection(xa, ya);
-
+        if (y < ya) direct = 2;
+        if (y > ya) direct = 0;
+        if (x > xa) direct = 3;
+        if (x < xa) direct = 4;
         if (canMove(xa, ya)) {
             x = xa;
             y = ya;
-        } else {
-            soften(xa, ya);
-        }
-    }
-
-    private int getDirection(double xa, double ya) {
-        if (y < ya) return 2;
-        if (y > ya) return 0;
-        if (x > xa) return 3;
-        return 4;
+        } else soften(xa, ya);
     }
 
     private void soften(double xa, double ya) {
@@ -143,6 +140,18 @@ public class Bomber extends Character {
         for (int[] p : points) {
             Entity entity = board.getEntity(p[0], p[1], this);
             if (entity instanceof Wall) return false;
+            if (entity instanceof LayeredEntity) {
+                Entity top = ((LayeredEntity) entity).getTopEntity();
+                if (top instanceof Brick) return false;
+//                if (top instanceof Item) {
+//                    top.collide(this);
+//                    return true;
+//                }
+//                if (top instanceof Portal && board.detectNoEnemies()) {
+//                    if (top.collide(this)) board.nextLevel();
+//                    return true;
+//                }
+            }
         }
 
         return true;
