@@ -4,6 +4,9 @@ import uet.oop.bomberman.Board;
 import uet.oop.bomberman.entities.Characters.Bomber;
 import uet.oop.bomberman.entities.Tile.Grass;
 import uet.oop.bomberman.entities.Tile.Destroyable.Brick;
+import uet.oop.bomberman.entities.Tile.Items.BombItem;
+import uet.oop.bomberman.entities.Tile.Items.FlameItem;
+import uet.oop.bomberman.entities.Tile.Items.SpeedItem;
 import uet.oop.bomberman.entities.Tile.Portal;
 import uet.oop.bomberman.entities.Tile.Wall;
 import uet.oop.bomberman.Game;
@@ -72,32 +75,26 @@ public class FileLevelLoader {
                     case '#' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
                     case '*' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Brick(x, y, Sprite.brick)));
                     case 'x' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Brick(x, y, Sprite.brick)));
-                    case 'b' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Brick(x, y, Sprite.brick)));
-                    case 'f' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Brick(x, y, Sprite.brick)));
-                    case 's' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Brick(x, y, Sprite.brick)));
+                    case 'b' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new BombItem(x, y, Sprite.powerup_bombs)));
+                    case 'f' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new FlameItem(x, y, Sprite.powerup_flames)));
+                    case 's' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new SpeedItem(x, y, Sprite.powerup_speed)));
                     case '1' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
-//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '2' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
-//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '3' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
-//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '4' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
-//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '5' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
-//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '6' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
-//                        board.addCharacter(new Bomber(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     default -> board.addEntity(pos, new Grass(x, y, Sprite.grass));
                 }

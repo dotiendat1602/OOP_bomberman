@@ -7,6 +7,7 @@ import uet.oop.bomberman.Game;
 import uet.oop.bomberman.entities.LayeredEntity;
 import uet.oop.bomberman.entities.Tile.Destroyable.Brick;
 import uet.oop.bomberman.entities.Tile.Destroyable.DestroyableTile;
+import uet.oop.bomberman.entities.Tile.Items.Item;
 import uet.oop.bomberman.entities.Tile.Portal;
 import uet.oop.bomberman.entities.Tile.Wall;
 import uet.oop.bomberman.graphics.Screen;
@@ -57,11 +58,6 @@ public class Bomber extends Character {
 
     private void calculateXOffset() {
         Screen.setOffset(Screen.calculateXOffset(board, this), 0);
-    }
-
-    @Override
-    public boolean collide(Entity e) {
-        return true;
     }
 
     @Override
@@ -143,10 +139,10 @@ public class Bomber extends Character {
             if (entity instanceof LayeredEntity) {
                 Entity top = ((LayeredEntity) entity).getTopEntity();
                 if (top instanceof Brick) return false;
-//                if (top instanceof Item) {
-//                    top.collide(this);
-//                    return true;
-//                }
+                if (top instanceof Item) {
+                    top.collide(this);
+                    return true;
+                }
 //                if (top instanceof Portal && board.detectNoEnemies()) {
 //                    if (top.collide(this)) board.nextLevel();
 //                    return true;
@@ -191,6 +187,11 @@ public class Bomber extends Character {
                 Game.addBombRate(1);
             }
         }
+    }
+
+    @Override
+    public boolean collide(Entity e) {
+        return true;
     }
 
     @Override
