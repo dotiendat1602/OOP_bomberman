@@ -83,23 +83,18 @@ public class Bomb extends AnimatedEntity {
         if (e instanceof FlameSegment && !exploded) explode();
 
         if (e instanceof Bomber) {
-            double loLy = e.getY() - 1;
-            double loRy = e.getY() - 1;
-            double upLy = e.getY() + 1 - Game.TILE_SIZE;
-            double upRy = e.getY() + 1 - Game.TILE_SIZE;
-            double upLx = e.getX() + 1;
-            double loLx = e.getX() + 1;
-            double upRx = e.getX() - 1 + (double) Game.TILE_SIZE * 3 / 4;
-            double loRx = e.getX() - 1 + (double) Game.TILE_SIZE * 3 / 4;
-            int tile_UpLx = Coordinates.pixelToTile(upLx);
-            int tile_UpLy = Coordinates.pixelToTile(upLy);
-            int tile_UpRx = Coordinates.pixelToTile(upRx);
-            int tile_UpRy = Coordinates.pixelToTile(upRy);
-            int tile_LoLx = Coordinates.pixelToTile(loLx);
-            int tile_LoLy = Coordinates.pixelToTile(loLy);
-            int tile_LoRx = Coordinates.pixelToTile(loRx);
-            int tile_LoRy = Coordinates.pixelToTile(loRy);
-            return (tile_LoLx != x || tile_LoLy != y) && (tile_LoRx != x || tile_LoRy != y) && (tile_UpLx != x || tile_UpLy != y) && (tile_UpRx != x || tile_UpRy != y);
+            double ex = e.getX();
+            double ey = e.getY();
+            double[] px = {ex + 1, ex - 1 + (double) Game.TILE_SIZE * 3 / 4};
+            double[] py = {ey - 1, ey + 1 - Game.TILE_SIZE};
+
+            for (double xPos : px) {
+                for (double yPos : py) {
+                    if (Coordinates.pixelToTile(xPos) == x && Coordinates.pixelToTile(yPos) == y) {
+                        return false;
+                    }
+                }
+            }
         }
         return true;
     }

@@ -96,6 +96,7 @@ public class Board {
         characters.clear();
         bombs.clear();
 
+        resetPropertiesButKeepScore();
         Screen.setOffset(0, 0);
         Game.playSE(7);
         try {
@@ -115,8 +116,15 @@ public class Board {
 
     public void newGame() {
         loadLevel(1);
-//        resetProperties();
+        resetProperties();
         lives = Game.LIVES;
+    }
+
+    public void restart() {
+        if (lives > 0) {
+            loadLevel(fileLevelLoader.getLevel());
+            resetProperties();
+        }
     }
 
     public void endGame() {
@@ -145,7 +153,25 @@ public class Board {
         game.resume();
     }
 
+    private void resetProperties() {
+        points = Game.POINTS;
+        Game.bomberSpeed = 1.0;
+        Game.bombRadius = 1;
+        Game.bombRate = 1;
+    }
 
+    private void resetPropertiesButKeepScore() {
+        Game.bomberSpeed = 1.0;
+        Game.bombRadius = 1;
+        Game.bombRate = 1;
+    }
+
+    public boolean detectNoEnemies() {
+        int total = 0;
+        for (Character character : characters)
+            if (!(character instanceof Bomber)) total++;
+        return total == 0;
+    }
 
     public void drawScreen(Graphics g) {
         switch (screenToShow) {

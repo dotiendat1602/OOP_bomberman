@@ -15,11 +15,14 @@ import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.Input.Keyboard;
 import uet.oop.bomberman.Level.Coordinates;
 
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
 public class Bomber extends Character {
     private final Keyboard input;
+
+    protected int finalAnimation = 30;
 
     protected int timeBetweenPutBombs = 0;
     private final List<Bomb> bombs;
@@ -147,10 +150,10 @@ public class Bomber extends Character {
                     top.collide(this);
                     return true;
                 }
-//                if (top instanceof Portal && board.detectNoEnemies()) {
-//                    if (top.collide(this)) board.nextLevel();
-//                    return true;
-//                }
+                if (top instanceof Portal && board.detectNoEnemies()) {
+                    if (top.collide(this)) board.nextLevel();
+                    return true;
+                }
             }
         }
 
@@ -206,8 +209,22 @@ public class Bomber extends Character {
     }
 
     @Override
-    public void kill() {}
+    public void kill() {
+        if (!alive) return;
+        Game.playSE(4);
+        alive = false;
+        board.addLives(-1);
+    }
 
     @Override
-    protected void afterKill() {}
+    protected void afterKill() {
+        if (timeAfter > 0) {
+            --timeAfter;
+            if (finalAnimation > 0) finalAnimation--;
+            else render = false;
+        } else {
+            if (board.getLives() > 0) board.restart();
+            else board.endGame();
+        }
+    }
 }
