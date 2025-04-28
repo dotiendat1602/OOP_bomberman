@@ -127,10 +127,14 @@ public class Bomber extends Character {
     @Override
     public boolean canMove(double x, double y) {
         int[][] points = {
-                {Coordinates.pixelToTile(x + 1), Coordinates.pixelToTile(y + 1 - Game.TILE_SIZE)},  // Top-left
-                {Coordinates.pixelToTile(x - 1 + (Game.TILE_SIZE * 3 / 4)), Coordinates.pixelToTile(y + 1 - Game.TILE_SIZE)}, // Top-right
-                {Coordinates.pixelToTile(x + 1), Coordinates.pixelToTile(y - 1)},  // Bottom-left
-                {Coordinates.pixelToTile(x - 1 + (Game.TILE_SIZE * 3 / 4)), Coordinates.pixelToTile(y - 1)} // Bottom-right
+                // top-left
+                {Coordinates.pixelToTile(x + 1), Coordinates.pixelToTile(y + 1 - Game.TILE_SIZE)},
+                // Top-right
+                {Coordinates.pixelToTile(x - 1 + (Game.TILE_SIZE * 3 / 4)), Coordinates.pixelToTile(y + 1 - Game.TILE_SIZE)},
+                // Bottom-left
+                {Coordinates.pixelToTile(x + 1), Coordinates.pixelToTile(y - 1)},
+                // Bottom-right
+                {Coordinates.pixelToTile(x - 1 + (Game.TILE_SIZE * 3 / 4)), Coordinates.pixelToTile(y - 1)}
         };
 
         for (int[] p : points) {
@@ -147,6 +151,12 @@ public class Bomber extends Character {
 //                    if (top.collide(this)) board.nextLevel();
 //                    return true;
 //                }
+            }
+        }
+
+        for (int[] p : points) {
+            if (collide(board.getEntity(p[0], p[1], this))) {
+                return false;
             }
         }
 
@@ -191,7 +201,8 @@ public class Bomber extends Character {
 
     @Override
     public boolean collide(Entity e) {
-        return true;
+        if (e instanceof Bomb) return e.collide(this);
+        return false;
     }
 
     @Override
