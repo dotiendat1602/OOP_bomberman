@@ -42,6 +42,10 @@ public class Bomber extends Character {
     public void update() {
         animate();
         clearBombs();
+        if (!alive) {
+            afterKill();
+            return;
+        }
         if (timeBetweenPutBombs < -7500) {
             timeBetweenPutBombs = 0;
         }
