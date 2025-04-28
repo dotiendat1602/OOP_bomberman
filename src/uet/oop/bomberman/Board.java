@@ -4,8 +4,20 @@ import uet.oop.bomberman.entities.Bomb.Bomb;
 import uet.oop.bomberman.entities.Bomb.FlameSegment;
 import uet.oop.bomberman.entities.Characters.Bomber;
 import uet.oop.bomberman.entities.Characters.Character;
-
+import uet.oop.bomberman.entities.Tile.Wall;
+import uet.oop.bomberman.entities.Tile.Grass;
+import uet.oop.bomberman.entities.LayeredEntity;
+import uet.oop.bomberman.entities.Tile.Destroyable.Brick;
+import uet.oop.bomberman.entities.Tile.Destroyable.DestroyableTile;
+import uet.oop.bomberman.entities.Bomb.Bomb;
+import uet.oop.bomberman.entities.Bomb.FlameSegment;
+import uet.oop.bomberman.entities.Bomb.Flame;
+import uet.oop.bomberman.entities.Tile.Items.SpeedItem;
+import uet.oop.bomberman.entities.Tile.Items.BombItem;
+import uet.oop.bomberman.entities.Tile.Items.FlameItem;
 import uet.oop.bomberman.Level.FileLevelLoader;
+import uet.oop.bomberman.entities.Tile.Portal;
+
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.graphics.Screen;
 import uet.oop.bomberman.Input.Keyboard;
@@ -300,4 +312,45 @@ public class Board {
         return fileLevelLoader.getWidth();
     }
 
+
+    private char revive(Entity e) {
+        if (e instanceof Wall) return '#';
+        else if (e instanceof Grass) return ' ';
+        else if (e instanceof LayeredEntity) {
+            Entity top = ((LayeredEntity) e).getTopEntity();
+            if (top instanceof Portal) return 'x';
+            else if (top instanceof SpeedItem) return 's';
+            else if (top instanceof BombItem) return 'b';
+            else if (top instanceof FlameItem) return 'f';
+            else if (top instanceof Brick) return '*';
+            else return ' ';
+        } else if (e instanceof Character) {
+            if (e instanceof Bomber) {
+                if (getEntity(e.getXTile(), e.getYTile(), (Bomber) e) instanceof Bomb) return '8';
+                return 'p';
+            }
+//            else if (e instanceof Balloom) return '1';
+//            else if (e instanceof Oneal) return '2';
+//            else if (e instanceof Doll) return '3';
+//            else if (e instanceof Minvo) return '4';
+//            else if (e instanceof Ghost) return '5';
+//            else if (e instanceof Kondoria) return '6';
+            else return 'p';
+        } else if (e instanceof Bomb) {
+            Bomber b = getBomber();
+            if (b.getXTile() == e.getX() && b.getYTile() == e.getY()) return '8';
+            return '7';
+        } else return ' ';
+    }
+
+    private void updateMap() {
+        for (int h = 0; h < fileLevelLoader.getHeight(); h++)
+            for (int w = 0; w < fileLevelLoader.getWidth(); w++) map[w][h] = revive(getEntity(w, h, null));
+
+    }
+
+    public char[][] reviveMap() {
+        if (map != null) updateMap();
+        return map;
+    }
 }
