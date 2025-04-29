@@ -81,6 +81,21 @@ public class Bomb extends AnimatedEntity {
     @Override
     public boolean collide(Entity e) {
         if (e instanceof FlameSegment && !exploded) explode();
+
+        if (e instanceof Bomber) {
+            double ex = e.getX();
+            double ey = e.getY();
+            double[] px = {ex + 1, ex - 1 + (double) Game.TILE_SIZE * 3 / 4};
+            double[] py = {ey - 1, ey + 1 - Game.TILE_SIZE};
+
+            for (double xPos : px) {
+                for (double yPos : py) {
+                    if (Coordinates.pixelToTile(xPos) == x && Coordinates.pixelToTile(yPos) == y) {
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 }

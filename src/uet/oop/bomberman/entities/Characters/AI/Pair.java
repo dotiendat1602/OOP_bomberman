@@ -1,4 +1,4 @@
-package uet.oop.bomberman.Library;
+package uet.oop.bomberman.entities.Characters.AI;
 
 public class Pair {
     int x, y;

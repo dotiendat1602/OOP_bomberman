@@ -2,14 +2,8 @@ package uet.oop.bomberman.entities.Characters.AI;
 
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.Game;
-import uet.oop.bomberman.Library.Pair;
-import uet.oop.bomberman.Library.Queue;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AI {
     // Hằng số di chuyển theo 4 hướng (phải, xuống, lên, trái)
@@ -61,8 +55,7 @@ public abstract class AI {
     // Tính toán vùng nguy hiểm từ bom
     private void calculateDangerZones() {
         inDanger = new boolean[height][width];
-        Queue<Pair> queue = new Queue<>();
-
+        Queue<Pair> queue = new LinkedList<>();
         // Khởi tạo vị trí bom
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -75,7 +68,7 @@ public abstract class AI {
 
         // Lan truyền vùng nguy hiểm
         while (!queue.isEmpty()) {
-            Pair current = queue.remove();
+            Pair current = queue.poll();
             int x = current.getX(), y = current.getY();
 
             for (int dir = 0; dir < 4; dir++) {
@@ -101,7 +94,7 @@ public abstract class AI {
     // Tính khoảng cách từ kẻ địch và bom
     private void calculateEnemyDistances() {
         distanceFromEnemy = new int[height][width];
-        Queue<Pair> queue = new Queue<>();
+        Queue<Pair> queue = new LinkedList<>();
 
         // Khởi tạo khoảng cách
         for (int i = 0; i < height; i++) {
@@ -121,8 +114,7 @@ public abstract class AI {
         // BFS cho khoảng cách từ kẻ địch
         processDistances(queue, new HashSet<>(Arrays.asList('2', '4', '5', '6', '7', '#', '*')));
 
-        // Xử lý vị trí bom
-        queue = new Queue<>(); // Khởi tạo lại queue
+        queue = new LinkedList<>();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (map[i][j] == '7') {
@@ -139,7 +131,7 @@ public abstract class AI {
     // Xử lý BFS chung cho khoảng cách
     private void processDistances(Queue<Pair> queue, Set<Character> blockedTiles) {
         while (!queue.isEmpty()) {
-            Pair current = queue.remove();
+            Pair current = queue.poll();
             int x = current.getX(), y = current.getY();
             int currentDist = distanceFromEnemy[x][y];
 

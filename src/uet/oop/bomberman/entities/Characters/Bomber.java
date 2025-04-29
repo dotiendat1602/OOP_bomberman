@@ -14,8 +14,6 @@ import uet.oop.bomberman.graphics.Screen;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.Input.Keyboard;
 import uet.oop.bomberman.Level.Coordinates;
-import uet.oop.bomberman.entities.Bomb.FlameSegment;
-import uet.oop.bomberman.entities.Characters.Enemies.Enemy;
 
 import java.util.Iterator;
 import java.util.List;
@@ -193,11 +191,7 @@ public class Bomber extends Character {
 
     @Override
     public boolean collide(Entity e) {
-        if (e instanceof FlameSegment) e.collide(this);
-        if (e instanceof Enemy)
-            if (getXTile() == e.getXTile() && getYTile() == e.getYTile()) kill();
-        if (e instanceof Bomb) return e.collide(this);
-        return false;
+        return true;
     }
 
     @Override

@@ -69,16 +69,16 @@ public class Game extends JMenu {
 
             switch (command) {
                 case "New":
-//                    frame.newGame();
+                    frame.newGame();
                     break;
                 case "Restart":
-//                    frame.restart();
+                    frame.restart();
                     break;
                 case "Pause":
-//                    frame.pause();
+                    frame.pause();
                     break;
                 case "Resume":
-//                    frame.resume();
+                    frame.resume();
                     break;
             }
         }
