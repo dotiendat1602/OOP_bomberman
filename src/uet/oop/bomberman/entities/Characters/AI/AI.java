@@ -3,179 +3,157 @@ package uet.oop.bomberman.entities.Characters.AI;
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.Game;
 
-import java.util.*;
+import java.util.ArrayList;
+import uet.oop.bomberman.entities.Characters.AI.Pair;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
 
 public abstract class AI {
-    // Hằng số di chuyển theo 4 hướng (phải, xuống, lên, trái)
-    protected static final int[] DX = {1, 0, 0, -1};
-    protected static final int[] DY = {0, 1, -1, 0};
-
-    // Các tập hợp ô đặc biệt
-    protected static final Set<Character> BLOCKING_TILES = new HashSet<>(Arrays.asList(
-            '*', 'p', 'x', '2', '4', '5', '6', '7', '8'
-    ));
-    protected static final Set<Character> ENEMY_TILES = new HashSet<>(Arrays.asList(
-            '2', '4', '5', '6'
-    ));
-    protected static final Set<Character> BOMB_TILES = new HashSet<>(Arrays.asList(
-            '7', '8'
-    ));
-
-    // Các trường thành viên
-    protected final Random random = new Random();
-    protected final Board board;
-    protected final HashMap<Character, Boolean> canGo;
-    protected final int height, width;
+    protected Random random = new Random();
+    protected Board board;
+    protected HashMap<Character, Boolean> canGo;
     protected char[][] map;
+    protected int[] hX = {1, 0, 0, -1};
+    protected int[] hY = {0, 1, -1, 0};
+    protected int m, n;
     protected boolean[][] inDanger;
     protected int[][] dangerDistance, distanceFromEnemy;
 
-    // Constructor
-    public AI(Board board) {
-        this.board = board;
-        this.height = Game.levelHeight;
-        this.width = Game.levelWidth;
-        this.canGo = initializeCanGoMap();
+    public AI() {
+        m = Game.levelHeight;
+        n = Game.levelWidth;
+        canGo = new HashMap<>();
+        // Khởi tạo các ký tự trên bản đồ với giá trị mặc định là không đi qua được
+        char[] items = {'#', ' ', '*', 'x', 'p', '1', '2', '3', '4', '5', '6', '7', '8', 'b', 'f', 's'};
+        for (char c : items) canGo.put(c, false);
     }
 
-    // Khởi tạo bản đồ các ô có thể đi được
-    private HashMap<Character, Boolean> initializeCanGoMap() {
-        HashMap<Character, Boolean> map = new HashMap<>();
-        for (char c : new char[]{'#', ' ', '*', 'x', 'p', '1', '2', '3', '4', '5', '6', '7', '8', 'b', 'f', 's'}) {
-            map.put(c, false);
-        }
-        return map;
+    protected boolean validate(int u, int v) {
+        return (0 <= u && u < Game.levelHeight && 0 <= v && v < Game.levelWidth);
     }
 
-    // Kiểm tra vị trí hợp lệ
-    protected boolean isValidPosition(int x, int y) {
-        return x >= 0 && x < height && y >= 0 && y < width;
-    }
-
-    // Tính toán vùng nguy hiểm từ bom
-    private void calculateDangerZones() {
-        inDanger = new boolean[height][width];
+    // Tính toán các ô nguy hiểm dựa trên bom và vụ nổ
+    private void calcInDanger() {
+        inDanger = new boolean[m][n];
         Queue<Pair> queue = new LinkedList<>();
-        // Khởi tạo vị trí bom
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (BOMB_TILES.contains(map[i][j])) {
+        // Tìm các ô chứa bom hoặc vụ nổ
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (map[i][j] == '7' || map[i][j] == '8') {
                     queue.add(new Pair(i, j));
                     inDanger[i][j] = true;
                 }
             }
         }
 
-        // Lan truyền vùng nguy hiểm
+        // Tính vùng ảnh hưởng của bom
         while (!queue.isEmpty()) {
-            Pair current = queue.poll();
-            int x = current.getX(), y = current.getY();
-
-            for (int dir = 0; dir < 4; dir++) {
-                for (int dist = 1; dist <= Game.getBombRadius(); dist++) {
-                    int nx = x + DX[dir] * dist;
-                    int ny = y + DY[dir] * dist;
-
-                    if (!isValidPosition(nx, ny) || map[nx][ny] == '#') {
-                        break;
-                    }
-                    inDanger[nx][ny] = true;
-                    if (BLOCKING_TILES.contains(map[nx][ny])) {
-                        break;
-                    }
+            Pair top = queue.remove();
+            int u = top.getX(), v = top.getY();
+            for (int j = 0; j < 4; j++) {
+                for (int i = 1; i <= Game.getBombRadius(); i++) {
+                    int x = u + hX[j] * i;
+                    int y = v + hY[j] * i;
+                    if (!validate(x, y) || map[x][y] == '#') break;
+                    inDanger[x][y] = true;
+                    if (isBlockingTile(map[x][y])) break;
                 }
             }
         }
     }
 
-    // Phương thức trừu tượng để tính khoảng cách nguy hiểm
+    // Kiểm tra ô có chặn vụ nổ không
+    private boolean isBlockingTile(char tile) {
+        return tile == '*' || tile == 'p' || tile == 'x' || tile == '2' || tile == '4' || tile == '5' || tile == '6' || tile == '7' || tile == '8';
+    }
+
+    // Tính khoảng cách từ các ô đến kẻ thù
+    private void calcDistanceFromEnemy() {
+        distanceFromEnemy = new int[m][n];
+        Queue<Pair> queue = new LinkedList<>();
+        // Khởi tạo khoảng cách cho các ô chứa kẻ thù
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (isEnemyTile(map[i][j])) {
+                    queue.add(new Pair(i, j));
+                    distanceFromEnemy[i][j] = 0;
+                } else {
+                    distanceFromEnemy[i][j] = -1;
+                }
+            }
+        }
+
+        // BFS để tính khoảng cách từ kẻ thù
+        processDistanceQueue(queue, this::isEnemyBlockingTile);
+
+        // Cập nhật khoảng cách từ bom
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (map[i][j] == '7') {
+                    queue.add(new Pair(i,j));
+                    distanceFromEnemy[i][j] = 0;
+                }
+            }
+        }
+
+        processDistanceQueue(queue, this::isBombBlockingTile);
+    }
+
+    // Kiểm tra ô có phải là kẻ thù
+    private boolean isEnemyTile(char tile) {
+        return tile == '2' || tile == '4' || tile == '5' || tile == '6';
+    }
+
+    // Kiểm tra ô chặn đường đi của kẻ thù
+    private boolean isEnemyBlockingTile(char tile) {
+        return tile == '2' || tile == '4' || tile == '5' || tile == '6' || tile == '7' || tile == '#' || tile == '*';
+    }
+
+    // Kiểm tra ô chặn đường đi của bom
+    private boolean isBombBlockingTile(char tile) {
+        return tile == '2' || tile == '4' || tile == '5' || tile == '6' || tile == '7' || tile == '#';
+    }
+
+    // Xử lý hàng đợi BFS cho khoảng cách
+    private void processDistanceQueue(Queue<Pair> queue, java.util.function.Predicate<Character> isBlocking) {
+        while (!queue.isEmpty()) {
+            Pair top = queue.remove();
+            int u = top.getX(), v = top.getY();
+            for (int i = 0; i < 4; i++) {
+                int x = u + hX[i];
+                int y = v + hY[i];
+                if (!validate(x, y) || isBlocking.test(map[x][y])) continue;
+                if (distanceFromEnemy[x][y] != -1 && distanceFromEnemy[x][y] <= distanceFromEnemy[u][v] + 1) continue;
+                distanceFromEnemy[x][y] = distanceFromEnemy[u][v] + 1;
+                queue.add(new Pair(x, y));
+            }
+        }
+    }
+
     abstract public void calcDangerDistance();
 
-    // Tính khoảng cách từ kẻ địch và bom
-    private void calculateEnemyDistances() {
-        distanceFromEnemy = new int[height][width];
-        Queue<Pair> queue = new LinkedList<>();
-
-        // Khởi tạo khoảng cách
-        for (int i = 0; i < height; i++) {
-            Arrays.fill(distanceFromEnemy[i], -1);
-        }
-
-        // Xử lý vị trí kẻ địch
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (ENEMY_TILES.contains(map[i][j])) {
-                    queue.add(new Pair(i, j));
-                    distanceFromEnemy[i][j] = 0;
-                }
-            }
-        }
-
-        // BFS cho khoảng cách từ kẻ địch
-        processDistances(queue, new HashSet<>(Arrays.asList('2', '4', '5', '6', '7', '#', '*')));
-
-        queue = new LinkedList<>();
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (map[i][j] == '7') {
-                    queue.add(new Pair(i, j));
-                    distanceFromEnemy[i][j] = 0;
-                }
-            }
-        }
-
-        // BFS cho khoảng cách từ bom
-        processDistances(queue, new HashSet<>(Arrays.asList('2', '4', '5', '6', '7', '#')));
-    }
-
-    // Xử lý BFS chung cho khoảng cách
-    private void processDistances(Queue<Pair> queue, Set<Character> blockedTiles) {
-        while (!queue.isEmpty()) {
-            Pair current = queue.poll();
-            int x = current.getX(), y = current.getY();
-            int currentDist = distanceFromEnemy[x][y];
-
-            for (int i = 0; i < 4; i++) {
-                int nx = x + DX[i], ny = y + DY[i];
-
-                if (!isValidPosition(nx, ny) || blockedTiles.contains(map[nx][ny])) {
-                    continue;
-                }
-                if (distanceFromEnemy[nx][ny] != -1 && distanceFromEnemy[nx][ny] <= currentDist + 1) {
-                    continue;
-                }
-
-                distanceFromEnemy[nx][ny] = currentDist + 1;
-                queue.add(new Pair(nx, ny));
-            }
-        }
-    }
-
-    // Khởi tạo các khoảng cách
     public void initDistance() {
-        calculateDangerZones();
+        calcInDanger();
         calcDangerDistance();
-        calculateEnemyDistances();
+        calcDistanceFromEnemy();
     }
 
-    // Cập nhật bản đồ hiện tại
     public void calcCurrentMap() throws NullPointerException {
-        if (board == null) {
-            throw new NullPointerException("Board is null");
-        }
-        char[][] temp = board.reviveMap();
+        if (this.board == null) throw new NullPointerException();
+        char[][] temp = this.board.reviveMap();
         if (temp == null) {
             map = null;
             return;
         }
-        map = new char[height][width];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        map = new char[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
                 map[i][j] = temp[j][i];
             }
         }
     }
 
-    // Phương thức trừu tượng để tính hướng di chuyển
     public abstract int calculateDirection();
 }
