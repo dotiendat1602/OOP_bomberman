@@ -114,6 +114,7 @@ public class Board {
         if (time <= 0) endGame();
     }
 
+
     public void newGame() {
         loadLevel(1);
         resetProperties();

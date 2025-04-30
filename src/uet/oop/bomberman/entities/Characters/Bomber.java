@@ -20,8 +20,12 @@ import uet.oop.bomberman.entities.Characters.Enemies.Enemy;
 import java.util.Iterator;
 import java.util.List;
 
+import java.awt.*;
+
 public class Bomber extends Character {
     private final Keyboard input;
+
+    protected int finalAnimation = 30;
 
     protected int timeBetweenPutBombs = 0;
     private final List<Bomb> bombs;
@@ -41,6 +45,10 @@ public class Bomber extends Character {
     public void update() {
         animate();
         clearBombs();
+        if (!alive) {
+            afterKill();
+            return;
+        }
         if (timeBetweenPutBombs < -7500) {
             timeBetweenPutBombs = 0;
         }
@@ -145,10 +153,16 @@ public class Bomber extends Character {
                     top.collide(this);
                     return true;
                 }
-//                if (top instanceof Portal && board.detectNoEnemies()) {
-//                    if (top.collide(this)) board.nextLevel();
-//                    return true;
-//                }
+                if (top instanceof Portal && board.detectNoEnemies()) {
+                    if (top.collide(this)) board.nextLevel();
+                    return true;
+                }
+            }
+        }
+
+        for (int[] p : points) {
+            if (collide(board.getEntity(p[0], p[1], this))) {
+                return false;
             }
         }
 
@@ -194,15 +208,27 @@ public class Bomber extends Character {
     @Override
     public boolean collide(Entity e) {
         if (e instanceof FlameSegment) e.collide(this);
-        if (e instanceof Enemy)
-            if (getXTile() == e.getXTile() && getYTile() == e.getYTile()) kill();
         if (e instanceof Bomb) return e.collide(this);
         return false;
     }
 
     @Override
-    public void kill() {}
+    public void kill() {
+        if (!alive) return;
+        Game.playSE(4);
+        alive = false;
+        board.addLives(-1);
+    }
 
     @Override
-    protected void afterKill() {}
+    protected void afterKill() {
+        if (timeAfter > 0) {
+            --timeAfter;
+            if (finalAnimation > 0) finalAnimation--;
+            else render = false;
+        } else {
+            if (board.getLives() > 0) board.restart();
+            else board.endGame();
+        }
+    }
 }
