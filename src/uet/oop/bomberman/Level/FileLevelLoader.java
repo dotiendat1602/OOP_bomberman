@@ -26,15 +26,18 @@ public class FileLevelLoader {
 
     private static char[][] map;
 
-    public FileLevelLoader(Board board, int level) throws Exception {
+    public FileLevelLoader(Board board, int level) throws IOException {
         loadLevel(level);
         this.board = board;
     }
 
-    public void loadLevel(int level) throws Exception {
+    public void loadLevel(int level) throws IOException {
         try {
             Class<?> c = Class.forName("uet.oop.bomberman.Level.FileLevelLoader");
             InputStream stream = c.getResourceAsStream("/Levels/level" + level + ".txt");
+            if (stream == null) {
+                throw new IOException("Level file not found: /Utils/Levels/level" + level + ".txt");
+            }
             Reader r = new InputStreamReader(Objects.requireNonNull(stream), StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(r);
 
@@ -65,6 +68,9 @@ public class FileLevelLoader {
     public void createEntities() {
         Game.levelHeight = height;
         Game.levelWidth = width;
+        if (map == null) {
+            throw new IllegalStateException("Map is not initialized. Failed to load level.");
+        }
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -77,20 +83,17 @@ public class FileLevelLoader {
                     }
                     case '#' -> board.addEntity(pos, new Wall(x, y, Sprite.wall));
                     case '*' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Brick(x, y, Sprite.brick)));
-                    case 'x' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Brick(x, y, Sprite.brick)));
-                    case 'b' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new BombItem(x, y, Sprite.powerup_bombs)));
-                    case 'f' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new FlameItem(x, y, Sprite.powerup_flames)));
-                    case 's' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new SpeedItem(x, y, Sprite.powerup_speed)));
+                    case 'x' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new Portal(x, y, Sprite.portal), new Brick(x, y, Sprite.brick)));
+                    case 'b' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new BombItem(x, y, Sprite.powerup_bombs), new Brick(x, y, Sprite.brick)));
+                    case 'f' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new FlameItem(x, y, Sprite.powerup_flames), new Brick(x, y, Sprite.brick)));
+                    case 's' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new SpeedItem(x, y, Sprite.powerup_speed), new Brick(x, y, Sprite.brick)));
                     case '1' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
                         board.addCharacter(new Balloom(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
-
-
                     }
                     case '2' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
                         board.addCharacter(new Doll(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
-
                     }
                     case '3' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
@@ -98,6 +101,7 @@ public class FileLevelLoader {
                     }
                     case '4' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
+                        board.addCharacter(new Minvo(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '5' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));

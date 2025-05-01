@@ -23,6 +23,7 @@ import uet.oop.bomberman.graphics.Screen;
 import uet.oop.bomberman.Input.Keyboard;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -103,10 +104,11 @@ public class Board {
             fileLevelLoader = new FileLevelLoader(this, level);
             entities = new Entity[fileLevelLoader.getHeight() * fileLevelLoader.getWidth()];
             fileLevelLoader.createEntities();
-        } catch (NullPointerException e) {
-            finishGame();
-        } catch (Exception e) {
+        } catch (IOException e) {
             endGame();
+        } catch (NullPointerException e) {
+            System.out.println("Lỗi map");
+            finishGame();
         }
     }
 
