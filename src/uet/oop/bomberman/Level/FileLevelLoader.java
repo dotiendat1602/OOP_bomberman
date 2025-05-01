@@ -2,6 +2,7 @@ package uet.oop.bomberman.Level;
 
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.entities.Characters.Bomber;
+import uet.oop.bomberman.entities.Characters.Enemies.Balloom;
 import uet.oop.bomberman.entities.Tile.Grass;
 import uet.oop.bomberman.entities.Tile.Destroyable.Brick;
 import uet.oop.bomberman.entities.Tile.Items.BombItem;
@@ -80,6 +81,7 @@ public class FileLevelLoader {
                     case 's' -> board.addEntity(pos, new LayeredEntity(x, y, new Grass(x, y, Sprite.grass), new SpeedItem(x, y, Sprite.powerup_speed)));
                     case '1' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
+                        board.addCharacter(new Balloom(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '2' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
