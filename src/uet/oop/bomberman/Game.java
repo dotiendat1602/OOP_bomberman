@@ -83,6 +83,7 @@ public class Game extends Canvas {
 
         Graphics g = bs.getDrawGraphics();
         g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+        board.renderMessages(g);
 
         g.dispose();
         bs.show();

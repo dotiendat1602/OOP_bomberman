@@ -5,6 +5,7 @@ import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.Bomb.Bomb;
 import uet.oop.bomberman.Game;
 import uet.oop.bomberman.entities.LayeredEntity;
+import uet.oop.bomberman.entities.Message;
 import uet.oop.bomberman.entities.Tile.Destroyable.Brick;
 import uet.oop.bomberman.entities.Tile.Destroyable.DestroyableTile;
 import uet.oop.bomberman.entities.Tile.Items.Item;
@@ -218,6 +219,9 @@ public class Bomber extends Character {
         Game.playSE(4);
         alive = false;
         board.addLives(-1);
+
+        Message msg = new Message("-1 LIVE", getXMessage(), getYMessage(), 2, Color.white, 14);
+        board.addMessage(msg);
     }
 
     @Override

@@ -7,6 +7,7 @@ import uet.oop.bomberman.entities.Characters.Character;
 import uet.oop.bomberman.entities.Characters.AI.AI;
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.Game;
+import uet.oop.bomberman.entities.Message;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.graphics.Screen;
 import uet.oop.bomberman.Level.Coordinates;
@@ -207,7 +208,8 @@ public abstract class Enemy extends Character {
         Game.playSE(6);
         board.addPoints(points);
 
-
+        Message msg = new Message("+" + points, getXMessage(), getYMessage(), 2, Color.white, 14);
+        board.addMessage(msg);
     }
 
 

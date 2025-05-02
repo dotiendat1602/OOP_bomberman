@@ -4,6 +4,7 @@ import uet.oop.bomberman.entities.Bomb.Bomb;
 import uet.oop.bomberman.entities.Bomb.FlameSegment;
 import uet.oop.bomberman.entities.Characters.Bomber;
 import uet.oop.bomberman.entities.Characters.Character;
+import uet.oop.bomberman.entities.Message;
 import uet.oop.bomberman.entities.Tile.Wall;
 import uet.oop.bomberman.entities.Tile.Grass;
 import uet.oop.bomberman.entities.LayeredEntity;
@@ -38,6 +39,7 @@ public class Board {
 
     protected List<Bomb> bombs = new ArrayList<>();
     public List<Character> characters = new ArrayList<>();
+    private final List<Message> messages = new ArrayList<>();
 
     private int screenToShow = -1;
 
@@ -62,6 +64,7 @@ public class Board {
         updateEntities();
         updateBombs();
         updateCharacters();
+        updateMessages();
         detectEndGame();
 
         for (int i = 0; i < characters.size(); i++) {
@@ -96,6 +99,7 @@ public class Board {
         game.pause();
         characters.clear();
         bombs.clear();
+        messages.clear();
 
         resetPropertiesButKeepScore();
         Screen.setOffset(0, 0);
@@ -107,7 +111,6 @@ public class Board {
         } catch (IOException e) {
             endGame();
         } catch (NullPointerException e) {
-            System.out.println("Lỗi map");
             finishGame();
         }
     }
@@ -230,6 +233,10 @@ public class Board {
         bombs.add(e);
     }
 
+    public void addMessage(Message e) {
+        messages.add(e);
+    }
+
 
     protected void renderCharacter(Screen screen) {
         for (Character character : characters) character.render(screen);
@@ -237,6 +244,16 @@ public class Board {
 
     protected void renderBombs(Screen screen) {
         for (Bomb bomb : bombs) bomb.render(screen);
+    }
+
+    public void renderMessages(Graphics g) {
+        Message m;
+        for (Message message : messages) {
+            m = message;
+            g.setFont(new Font("Arial", Font.PLAIN, m.getSize()));
+            g.setColor(m.getColor());
+            g.drawString(m.getMessage(), (int) m.getX() - Screen.xOffset * Game.SCALE_MULTIPLE, (int) m.getY());
+        }
     }
 
     public FlameSegment getFlameSegmentAt(int x, int y) {
@@ -267,6 +284,17 @@ public class Board {
         for (Bomb bomb : bombs) bomb.update();
     }
 
+    protected void updateMessages() {
+        if (game.isPaused()) return;
+        Message m;
+        int left;
+        for (int i = 0; i < messages.size(); i++) {
+            m = messages.get(i);
+            left = m.getDuration();
+            if (left > 0) m.setDuration(--left);
+            else messages.remove(i);
+        }
+    }
 
     public int subtractTime() {
         if (game.isPaused()) return this.time;
