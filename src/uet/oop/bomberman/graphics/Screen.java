@@ -7,7 +7,11 @@ import uet.oop.bomberman.Board;
 import uet.oop.bomberman.Game;
 
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class Screen {
@@ -15,12 +19,30 @@ public class Screen {
     protected int width, height;
     public int[] pixels;
 
+    private BufferedImage background = null;
+    private Image backgroundFixed = null;
+
+    private BufferedImage aboutImage = null;
+
     public static int xOffset = 0, yOffset = 0;
 
     public Screen(int width, int height) {
         this.width = width;
         this.height = height;
         pixels = new int[width * height];
+
+        try {
+            background = ImageIO.read(new File("res/textures/menu.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        backgroundFixed = background.getScaledInstance(Game.WIDTH * Game.SCALE_MULTIPLE, Game.HEIGHT * Game.SCALE_MULTIPLE, Image.SCALE_DEFAULT);
+
+        try {
+            aboutImage = ImageIO.read(new File("res/textures/about-table.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void clear() {
@@ -105,6 +127,14 @@ public class Screen {
         g.setFont(font);
         g.setColor(Color.white);
         drawCenteredString("PAUSED", getRealWidth(), getRealHeight(), g);
+    }
+
+    public void drawMenu(Graphics g) {
+        g.drawImage(backgroundFixed, 0, 0, null);
+    }
+
+    public void drawAbout(Graphics g) {
+        g.drawImage(aboutImage, Game.WIDTH - 175, Game.HEIGHT - 100, null);
     }
 
     public void drawFinishGame(Graphics g, int points) {

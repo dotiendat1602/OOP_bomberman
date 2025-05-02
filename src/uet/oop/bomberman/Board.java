@@ -54,8 +54,9 @@ public class Board {
         this.game = game;
         this.input = input;
         this.screen = screen;
-        loadLevel(1);
-        map = new char[fileLevelLoader.getWidth()][fileLevelLoader.getHeight()];
+        screenToShow = 5;
+//        loadLevel(1);
+        map = new char[31][13];
     }
 
     public void update() {
@@ -109,8 +110,10 @@ public class Board {
             entities = new Entity[fileLevelLoader.getHeight() * fileLevelLoader.getWidth()];
             fileLevelLoader.createEntities();
         } catch (IOException e) {
+            e.printStackTrace();
             endGame();
         } catch (NullPointerException e) {
+            e.printStackTrace();
             finishGame();
         }
     }
@@ -185,6 +188,8 @@ public class Board {
             case 2 -> screen.drawChangeLevel(g, fileLevelLoader.getLevel());
             case 3 -> screen.drawPaused(g);
             case 4 -> screen.drawFinishGame(g, points);
+            case 5 -> screen.drawMenu(g);
+            case 6 -> screen.drawAbout(g);
         }
     }
 

@@ -68,4 +68,7 @@ public class Frame extends JFrame {
         infoPanel.setPoints(points);
     }
 
+    public InfoPanel get_infopanel() {
+        return infoPanel;
+    }
 }
