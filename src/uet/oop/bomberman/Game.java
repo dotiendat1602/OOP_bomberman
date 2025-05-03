@@ -12,6 +12,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.*;
 
 public class Game extends Canvas implements MouseListener, MouseMotionListener {
     //Thông số game
@@ -33,6 +34,8 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
 
     protected static int SCREEN_DELAY = 3;
 
+    public static int highScore = 0;
+
     //Thông số riêng của người chơi, có thể thay đổi khi ăn được các item
     protected static int bombRate = BOMB_RATE;
     protected static int bombRadius = BOMB_RADIUS;
@@ -53,6 +56,7 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
     private boolean paused = true;
     private boolean menu = true;
     private boolean isAboutPane = false;
+    public boolean isEndgame = false;
 
     //Sử dụng để render game
     private final BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -120,6 +124,7 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
 
     //Start game
     public void start() {
+        readHighscore();
         playMusic(0);
         while (menu) {
             renderScreen();
@@ -173,6 +178,33 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
 
                 if (this.board.getShow() == 2) screenDelay--;
             }
+        }
+    }
+
+    public void readHighscore() {
+        BufferedReader read;
+        try {
+            read = new BufferedReader(new FileReader(new File("res/Data/BestScore.txt")));
+            String score = read.readLine().trim();
+            if (score == null)
+                highScore = 0;
+            else
+                highScore = Integer.parseInt(score);
+            read.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveHighScore() {
+        try {
+            File file = new File("res/Data/BestScore.txt");
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(String.valueOf(highScore));
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -287,11 +319,11 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
 //            isResetGame = false;
 //        }
 //
-//        Rectangle replayButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 170, 150, 50);
-//        if (replayButton.contains(e.getX(), e.getY()) && isEndgame) {
-//            _board.newGame();
-//            isEndgame = false;
-//        }
+        Rectangle replayButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 170, 150, 50);
+        if (replayButton.contains(e.getX(), e.getY()) && isEndgame) {
+            board.newGame();
+            isEndgame = false;
+        }
     }
 
     @Override
@@ -347,14 +379,14 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
 //                }
 //            }
 //        }
-//        Rectangle replayButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 170, 150, 50);
-//        if (isEndgame) {
-//            if (replayButton.contains(e.getX(), e.getY())) {
-//                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//            } else {
-//                setCursor(Cursor.getDefaultCursor());
-//            }
-//        }
+        Rectangle replayButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 170, 150, 50);
+        if (isEndgame) {
+            if (replayButton.contains(e.getX(), e.getY())) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            } else {
+                setCursor(Cursor.getDefaultCursor());
+            }
+        }
 //        Rectangle confirmNewGame = new Rectangle(Game.WIDTH + 150, Game.HEIGHT + 100, 100, 40);
 //        Rectangle exitNewGame = new Rectangle(Game.WIDTH - 10, Game.HEIGHT + 100, 100, 40);
 //        if (isResetGame) {
@@ -423,6 +455,14 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
 
     public Board getBoard() {
         return board;
+    }
+
+    public int get_highscore() {
+        return highScore;
+    }
+
+    public void set_highscore(int highscore) {
+        highScore = highscore;
     }
 
     public void resume() {

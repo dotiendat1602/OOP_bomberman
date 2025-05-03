@@ -35,9 +35,6 @@ public class FileLevelLoader {
         try {
             Class<?> c = Class.forName("uet.oop.bomberman.Level.FileLevelLoader");
             InputStream stream = c.getResourceAsStream("/Levels/level" + level + ".txt");
-            if (stream == null) {
-                throw new IOException("Level file not found: /Utils/Levels/level" + level + ".txt");
-            }
             Reader r = new InputStreamReader(Objects.requireNonNull(stream), StandardCharsets.UTF_8);
             BufferedReader br = new BufferedReader(r);
 

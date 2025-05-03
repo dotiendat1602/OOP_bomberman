@@ -97,19 +97,24 @@ public class Screen {
     }
 
     /* Vẽ các màn hình game */
-    public void drawEndGame(Graphics g, int points) {
-        g.setColor(Color.black);
-        g.fillRect(0, 0, getRealWidth(), getRealHeight());
-
-        Font font = new Font("Arial", Font.PLAIN, 20 * Game.SCALE_MULTIPLE);
+    public void drawEndGame(Graphics g, int points, int highscore, int level) {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File("res/textures/score-table.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int targetWidth = image.getWidth() * Game.SCALE_MULTIPLE / 4;
+        int targetHeight = image.getHeight() * Game.SCALE_MULTIPLE / 4;
+        Image scoreTable = image.getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
+        Font font = new Font("Arial", Font.PLAIN, 12 * Game.SCALE_MULTIPLE);
         g.setFont(font);
         g.setColor(Color.white);
-        drawCenteredString("GAME OVER", getRealWidth(), getRealHeight(), g);
-
-        font = new Font("Arial", Font.PLAIN, 10 * Game.SCALE_MULTIPLE);
-        g.setFont(font);
-        g.setColor(Color.yellow);
-        drawCenteredString("SCORE: " + points, getRealWidth(), getRealHeight() + (Game.TILE_SIZE * 2) * Game.SCALE_MULTIPLE, g);
+        drawCenteredImage(scoreTable, targetWidth, targetHeight, getRealWidth(), getRealHeight(), g);
+        drawCenteredString("Level " + level, getRealWidth(), getRealHeight() - targetHeight + 140 / Game.SCALE_MULTIPLE, g);
+        drawCenteredString("Your score: " + points, getRealWidth(), getRealHeight() - targetHeight + 700 / Game.SCALE_MULTIPLE, g);
+        drawCenteredString("High score: " + highscore, getRealWidth(), getRealHeight() - targetHeight + 1000 / Game.SCALE_MULTIPLE, g);
+        drawCenteredString("Retry", getRealWidth() + 10, getRealHeight() - targetHeight + 1524 / Game.SCALE_MULTIPLE, g);
     }
 
     public void drawChangeLevel(Graphics g, int level) {
@@ -155,6 +160,13 @@ public class Screen {
     public void drawCenteredString(String s, int w, int h, Graphics g) {
         FontMetrics fm = g.getFontMetrics();
         g.drawString(s, (w - fm.stringWidth(s)) / 2, (fm.getAscent() + (h - (fm.getAscent() + fm.getDescent())) / 2));
+    }
+
+    public void drawCenteredImage(Image image, int imageWidth, int imageHeight,
+                                  int gameWidth, int gameHeight, Graphics g) {
+        int x = (gameWidth - imageWidth) / 2;
+        int y = (gameHeight - imageHeight) / 2;
+        g.drawImage(image, x, y, null);
     }
 
     public int getWidth() {

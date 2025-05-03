@@ -141,6 +141,11 @@ public class Board {
         game.resetScreenDelay();
         Game.playSE(9);
         game.pause();
+        game.isEndgame = true;
+        if(getPoints() >= game.get_highscore()){
+            game.set_highscore(getPoints());
+            game.saveHighScore();
+        }
     }
 
     public void finishGame() {
@@ -184,7 +189,7 @@ public class Board {
 
     public void drawScreen(Graphics g) {
         switch (screenToShow) {
-            case 1 -> screen.drawEndGame(g, points);
+            case 1 -> screen.drawEndGame(g, points, game.get_highscore(), fileLevelLoader.getLevel());
             case 2 -> screen.drawChangeLevel(g, fileLevelLoader.getLevel());
             case 3 -> screen.drawPaused(g);
             case 4 -> screen.drawFinishGame(g, points);
