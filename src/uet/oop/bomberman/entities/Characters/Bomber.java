@@ -219,6 +219,7 @@ public class Bomber extends Character {
         Game.playSE(4);
         alive = false;
         board.addLives(-1);
+        board.saveHighScoreAfterDie();
 
         Message msg = new Message("-1 LIVE", getXMessage(), getYMessage(), 2, Color.white, 14);
         board.addMessage(msg);

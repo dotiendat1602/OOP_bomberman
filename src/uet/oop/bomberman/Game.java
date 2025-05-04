@@ -387,16 +387,6 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
                 setCursor(Cursor.getDefaultCursor());
             }
         }
-//        Rectangle confirmNewGame = new Rectangle(Game.WIDTH + 150, Game.HEIGHT + 100, 100, 40);
-//        Rectangle exitNewGame = new Rectangle(Game.WIDTH - 10, Game.HEIGHT + 100, 100, 40);
-//        if (isResetGame) {
-//            if (confirmNewGame.contains(e.getX(), e.getY())
-//                    || exitNewGame.contains(e.getX(), e.getY())) {
-//                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//            } else {
-//                setCursor(Cursor.getDefaultCursor());
-//            }
-//        }
 
         if (!menu) {
             setCursor(Cursor.getDefaultCursor());

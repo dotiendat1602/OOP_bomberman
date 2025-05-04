@@ -83,7 +83,12 @@ public class Board {
         int y1 = (Screen.yOffset + screen.getHeight()) / Game.TILE_SIZE;
 
         for (int y = y0; y < y1; y++)
-            for (int x = x0; x < x1; x++) entities[x + y * fileLevelLoader.getWidth()].render(screen);
+            for (int x = x0; x < x1; x++) {
+                if (x < 0 || y < 0 || x >= fileLevelLoader.getWidth() || y >= fileLevelLoader.getHeight())
+                    continue;
+
+                entities[x + y * fileLevelLoader.getWidth()].render(screen);
+            }
 
         renderBombs(screen);
         renderCharacter(screen);
@@ -142,6 +147,9 @@ public class Board {
         Game.playSE(9);
         game.pause();
         game.isEndgame = true;
+    }
+
+    public void saveHighScoreAfterDie() {
         if(getPoints() >= game.get_highscore()){
             game.set_highscore(getPoints());
             game.saveHighScore();
