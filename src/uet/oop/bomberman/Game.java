@@ -55,7 +55,8 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
     private boolean running = false;
     private boolean paused = true;
     private boolean menu = true;
-    private boolean isAboutPane = false;
+    private boolean isSound = true;
+    private boolean isAboutPanel = false;
     public boolean isEndgame = false;
 
     //Sử dụng để render game
@@ -216,109 +217,31 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
             running = true;
         }
 
-//        Rectangle optionButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 210, 150, 50);
-//        if (optionButton.contains(e.getX(), e.getY()) && _menu && !isSetting) {
-//            isSetting = true;
-//            getBoard().setShow(5);
-//        }
+        Rectangle musicButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 210, 150, 50);
+        if (musicButton.contains(e.getX(), e.getY()) && menu) {
+            if (isSound) {
+                isSound = false;
+                sound.stop();
+            } else {
+                isSound = true;
+                sound.play();
+                sound.loop();
+            }
+
+        }
 
         Rectangle aboutButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 280, 150, 50);
         if (aboutButton.contains(e.getX(), e.getY()) && menu) {
-            isAboutPane = true;
+            isAboutPanel = true;
             getBoard().setShow(6);
         }
 
         Rectangle exitAboutButton = new Rectangle(Game.WIDTH + 370, Game.HEIGHT - 100, 60, 60);
-        if (exitAboutButton.contains(e.getX(), e.getY()) && isAboutPane) {
-            isAboutPane = false;
+        if (exitAboutButton.contains(e.getX(), e.getY()) && isAboutPanel) {
+            isAboutPanel = false;
             getBoard().setShow(5);
         }
 
-//        Rectangle exitSettingButton = new Rectangle(Game.WIDTH + 300, Game.HEIGHT - 60, 50, 50);
-//        if (exitSettingButton.contains(e.getX(), e.getY()) && (_paused || isSetting)) {
-//            if (_menu) {
-//                isSetting = false;
-//                getBoard().setShow(4);
-//            } else {
-//                isSetting = false;
-//                getBoard().gameResume();
-//            }
-//            if (isClickChangeMap) {
-//                if(screen.isBasicMap){
-//                    map.modifySpriteSheet("/textures/miramar.png", 64);
-//                    changeMap();
-//                    _frame.get_infopanel().changeBackground(desertColor);
-//                    screen.isBasicMap = false;
-//                }else{
-//                    map.modifySpriteSheet("/textures/erangel.png", 64);
-//                    changeMap();
-//                    _frame.get_infopanel().changeBackground(basicColor);
-//                    screen.isBasicMap = true;
-//                }
-//                isClickChangeMap = false;
-//            }
-//        }
-//
-//        Rectangle changeMapButton = new Rectangle(Game.WIDTH + 270, Game.HEIGHT + 40, 30, 30);
-//        Rectangle changeMapButton_1 = new Rectangle(Game.WIDTH + 70, Game.HEIGHT + 40, 30, 30);
-//
-//        if (changeMapButton.contains(e.getX(), e.getY()) && isSetting) {
-//            isClickChangeMap = true;
-//            if (screen.isBasicMap) {
-//                map.modifySpriteSheet("/textures/miramar.png", 64);
-//                screen.isBasicMap = false;
-//            } else {
-//                map.modifySpriteSheet("/textures/erangel.png", 64);
-//                screen.isBasicMap = true;
-//            }
-//        }
-//
-//        if (changeMapButton_1.contains(e.getX(), e.getY()) && isSetting) {
-//            isClickChangeMap = true;
-//            if (screen.isBasicMap) {
-//                map.modifySpriteSheet("/textures/miramar.png", 64);
-//                screen.isBasicMap = false;
-//            } else {
-//                map.modifySpriteSheet("/textures/erangel.png", 64);
-//                screen.isBasicMap = true;
-//            }
-//        }
-//
-//        Rectangle codeButton = new Rectangle(Game.WIDTH - 60, Game.HEIGHT + 140, 120, 50);
-//        if (codeButton.contains(e.getX(), e.getY()) && isSetting) {
-//            codePane.setVisible(true);
-//        }
-//
-//        Rectangle okButton = new Rectangle(Game.WIDTH + 90, Game.HEIGHT + 240, 100, 50);
-//        if (okButton.contains(e.getX(), e.getY()) && (isSetting)) {
-//            if (_menu) {
-//                isSetting = false;
-//                getBoard().setShow(4);
-//            } else {
-//                isSetting = false;
-//                getBoard().gameResume();
-//            }
-//            if (screen.isBasicMap) {
-//                _frame.get_infopanel().changeBackground(basicColor);
-//                changeMap();
-//            } else {
-//                changeMap();
-//                _frame.get_infopanel().changeBackground(desertColor);
-//            }
-//        }
-//
-//        Rectangle confirmNewGame = new Rectangle(Game.WIDTH + 150, Game.HEIGHT + 100, 100, 40);
-//        if (confirmNewGame.contains(e.getX(), e.getY()) && isResetGame) {
-//            getBoard().newGame();
-//            isResetGame = false;
-//        }
-//
-//        Rectangle exitNewGame = new Rectangle(Game.WIDTH - 10, Game.HEIGHT + 100, 100, 40);
-//        if(exitNewGame.contains(e.getX(), e.getY()) && isResetGame){
-//            getBoard().gameResume();
-//            isResetGame = false;
-//        }
-//
         Rectangle replayButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 170, 150, 50);
         if (replayButton.contains(e.getX(), e.getY()) && isEndgame) {
             board.newGame();
@@ -329,12 +252,13 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
     @Override
     public void mouseMoved(MouseEvent e) {
         Rectangle playButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 130, 150, 50);
-//        Rectangle optionButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 210, 150, 50);
+        Rectangle musicButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 210, 150, 50);
         Rectangle aboutButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 280, 150, 50);
 
-        if (menu && !isAboutPane) {
+        if (menu && !isAboutPanel) {
             if (playButton.contains(e.getX(), e.getY())
-                    || aboutButton.contains(e.getX(), e.getY())) {
+                    || aboutButton.contains(e.getX(), e.getY())
+                    || musicButton.contains(e.getX(), e.getY())) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             } else {
                 setCursor(Cursor.getDefaultCursor());
@@ -342,46 +266,8 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
         }
 
         Rectangle exitAbout = new Rectangle(Game.WIDTH + 370, Game.HEIGHT - 100, 60, 60);
-        if (isAboutPane) {
+        if (isAboutPanel) {
             if (exitAbout.contains(e.getX(), e.getY())) {
-                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            } else {
-                setCursor(Cursor.getDefaultCursor());
-            }
-        }
-
-
-//        Rectangle exitSettingButton = new Rectangle(Game.WIDTH + 300, Game.HEIGHT - 60, 50, 50);
-//        Rectangle changeMapButton = new Rectangle(Game.WIDTH + 270, Game.HEIGHT + 40, 30, 30);
-//        Rectangle changeMapButton_1 = new Rectangle(Game.WIDTH + 70, Game.HEIGHT + 40, 30, 30);
-//        Rectangle okButton = new Rectangle(Game.WIDTH + 90, Game.HEIGHT + 240, 100, 50);
-//        Rectangle codeButton = new Rectangle(Game.WIDTH - 60, Game.HEIGHT + 140, 120, 50);
-//
-//        if (isSetting) {
-//            if (exitSettingButton.contains(e.getX(), e.getY())
-//                    || changeMapButton.contains(e.getX(), e.getY())
-//                    || changeMapButton_1.contains(e.getX(), e.getY())
-//                    || codeButton.contains(e.getX(), e.getY())
-//                    || okButton.contains(e.getX(), e.getY())) {
-//                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//            } else {
-//                setCursor(Cursor.getDefaultCursor());
-//            }
-//            if (_menu) {
-//                if (exitSettingButton.contains(e.getX(), e.getY())
-//                        || changeMapButton.contains(e.getX(), e.getY())
-//                        || changeMapButton_1.contains(e.getX(), e.getY())
-//                        || codeButton.contains(e.getX(), e.getY())
-//                        || okButton.contains(e.getX(), e.getY())) {
-//                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//                } else {
-//                    setCursor(Cursor.getDefaultCursor());
-//                }
-//            }
-//        }
-        Rectangle replayButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 170, 150, 50);
-        if (isEndgame) {
-            if (replayButton.contains(e.getX(), e.getY())) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             } else {
                 setCursor(Cursor.getDefaultCursor());
@@ -390,6 +276,15 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
 
         if (!menu) {
             setCursor(Cursor.getDefaultCursor());
+        }
+
+        Rectangle replayButton = new Rectangle(Game.WIDTH + 50, Game.HEIGHT + 170, 150, 50);
+        if (isEndgame) {
+            if (replayButton.contains(e.getX(), e.getY())) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            } else {
+                setCursor(Cursor.getDefaultCursor());
+            }
         }
     }
 
@@ -478,4 +373,18 @@ public class Game extends Canvas implements MouseListener, MouseMotionListener {
         sound.setFile(i);
         sound.play();
     }
+
+//    public boolean isSoundEnabled() {
+//        return isSound;
+//    }
+//
+//    public void setSoundEnabled(boolean enabled) {
+//        this.isSound = enabled;
+//        if (!isSound) {
+//            sound.stop();
+//        } else {
+//            sound.play();
+//            sound.loop();
+//        }
+//    }
 }

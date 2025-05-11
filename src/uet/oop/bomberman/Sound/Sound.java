@@ -41,13 +41,33 @@ public class Sound {
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
+    public void stop() {
+        if (clip != null && clip.isRunning()) {
+            clip.stop();
+            clip.flush();
+            clip.setFramePosition(0);
+        }
+    }
+
     public static void main(String[] args) {
         try {
             Sound sound = new Sound();
             sound.setFile(0);
             sound.loop();
 
-            Thread.sleep(10000);
+            // Phát nhạc trong 5 giây
+            Thread.sleep(5000);
+
+            // Dừng nhạc
+            sound.stop();
+
+            // Đợi thêm 2 giây để kiểm tra
+            Thread.sleep(2000);
+
+            // Phát lại nhạc nếu muốn
+            sound.play();
+
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

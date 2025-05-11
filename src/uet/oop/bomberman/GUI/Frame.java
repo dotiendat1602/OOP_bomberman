@@ -13,16 +13,19 @@ public class Frame extends JFrame {
     private final Game game;
 
     public Frame() {
-        setJMenuBar(new Menu(this));
+
 
         JPanel containerPanel = new JPanel(new BorderLayout());
         gamePanel = new GamePanel(this);
+        game = gamePanel.getGame();
         infoPanel = new InfoPanel(gamePanel.getGame());
+
+        setJMenuBar(new Menu(this));
 
         containerPanel.add(infoPanel, BorderLayout.NORTH);
         containerPanel.add(gamePanel, BorderLayout.CENTER);
 
-        game = gamePanel.getGame();
+//        game = gamePanel.getGame();
         infoPanel.setVisible(false);
 
         add(containerPanel);
@@ -72,4 +75,10 @@ public class Frame extends JFrame {
     public InfoPanel get_infopanel() {
         return infoPanel;
     }
+
+    public Game getGame() {
+        return game;
+    }
+
+
 }

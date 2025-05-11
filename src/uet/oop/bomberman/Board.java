@@ -4,6 +4,7 @@ import uet.oop.bomberman.entities.Bomb.Bomb;
 import uet.oop.bomberman.entities.Bomb.FlameSegment;
 import uet.oop.bomberman.entities.Characters.Bomber;
 import uet.oop.bomberman.entities.Characters.Character;
+import uet.oop.bomberman.entities.Characters.Enemies.*;
 import uet.oop.bomberman.entities.Message;
 import uet.oop.bomberman.entities.Tile.Wall;
 import uet.oop.bomberman.entities.Tile.Grass;
@@ -404,12 +405,12 @@ public class Board {
                 if (getEntity(e.getXTile(), e.getYTile(), (Bomber) e) instanceof Bomb) return '8';
                 return 'p';
             }
-//            else if (e instanceof Balloom) return '1';
+            else if (e instanceof Balloom) return '1';
 //            else if (e instanceof Oneal) return '2';
-//            else if (e instanceof Doll) return '3';
-//            else if (e instanceof Minvo) return '4';
-//            else if (e instanceof Ghost) return '5';
-//            else if (e instanceof Kondoria) return '6';
+            else if (e instanceof Doll) return '3';
+            else if (e instanceof Minvo) return '4';
+            else if (e instanceof Ghost) return '5';
+            else if (e instanceof Kondoria) return '6';
             else return 'p';
         } else if (e instanceof Bomb) {
             Bomber b = getBomber();
