@@ -9,5 +9,6 @@ public class Menu extends JMenuBar {
         add(new Game(frame));
         add(new Level(frame));
         add(new Options(frame));
+//        add(new Music(frame, frame.getGame().getSound()));
     }
 }
