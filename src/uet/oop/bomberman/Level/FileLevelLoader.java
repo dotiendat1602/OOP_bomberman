@@ -94,7 +94,7 @@ public class FileLevelLoader {
                     }
                     case '3' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
-                        board.addCharacter(new Doll(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+                        board.addCharacter(new Oneal(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
                     }
                     case '4' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
@@ -107,6 +107,7 @@ public class FileLevelLoader {
                     case '6' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
                         board.addCharacter(new Kondoria(Coordinates.tileToPixel(x), Coordinates.tileToPixel(y) + Game.TILE_SIZE, board));
+
                     }
                     default -> board.addEntity(pos, new Grass(x, y, Sprite.grass));
                 }
