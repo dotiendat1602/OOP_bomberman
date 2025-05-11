@@ -49,16 +49,16 @@ public class Music extends JMenu {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            switch (action) {
-                case "play":
-                    frame.getGame().setSoundEnabled(true);
-                    break;
-                case "stop":
-                    frame.getGame().setSoundEnabled(false);
-                    break;
-                default:
-                    break;
-            }
+//            switch (action) {
+//                case "play":
+//                    frame.getGame().setSoundEnabled(true);
+//                    break;
+//                case "stop":
+//                    frame.getGame().setSoundEnabled(false);
+//                    break;
+//                default:
+//                    break;
+//            }
         }
     }
 }
