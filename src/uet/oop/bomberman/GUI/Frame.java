@@ -13,8 +13,6 @@ public class Frame extends JFrame {
     private final Game game;
 
     public Frame() {
-
-
         JPanel containerPanel = new JPanel(new BorderLayout());
         gamePanel = new GamePanel(this);
         game = gamePanel.getGame();

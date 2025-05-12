@@ -7,7 +7,6 @@ import uet.oop.bomberman.Game;
 import uet.oop.bomberman.entities.LayeredEntity;
 import uet.oop.bomberman.entities.Message;
 import uet.oop.bomberman.entities.Tile.Destroyable.Brick;
-import uet.oop.bomberman.entities.Tile.Destroyable.DestroyableTile;
 import uet.oop.bomberman.entities.Tile.Items.Item;
 import uet.oop.bomberman.entities.Tile.Portal;
 import uet.oop.bomberman.entities.Tile.Wall;
@@ -16,7 +15,6 @@ import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.Input.Keyboard;
 import uet.oop.bomberman.Level.Coordinates;
 import uet.oop.bomberman.entities.Bomb.FlameSegment;
-import uet.oop.bomberman.entities.Characters.Enemies.Enemy;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +28,6 @@ public class Bomber extends Character {
 
     protected int timeBetweenPutBombs = 0;
     private final List<Bomb> bombs;
-    private final int maxSteps;
     private boolean render = true;
 
     public Bomber(int x, int y, Board board) {
@@ -38,7 +35,6 @@ public class Bomber extends Character {
         bombs = board.getBombs();
         this.input = board.getInput();
         this.sprite = Sprite.player_right;
-        this.maxSteps = (int) Math.round(Game.TILE_SIZE / Game.getBomberSpeed());
         this.timeAfter = 250;
     }
 

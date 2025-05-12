@@ -70,7 +70,6 @@ public class FileLevelLoader {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int pos = x + y * width;
-                System.out.print(map[x][y]);
                 switch (map[x][y]) {
                     case 'p' -> {
                         board.addEntity(pos, new Grass(x, y, Sprite.grass));
@@ -112,7 +111,6 @@ public class FileLevelLoader {
                     default -> board.addEntity(pos, new Grass(x, y, Sprite.grass));
                 }
             }
-            System.out.println();
         }
     }
 

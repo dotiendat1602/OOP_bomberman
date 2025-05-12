@@ -406,7 +406,7 @@ public class Board {
                 return 'p';
             }
             else if (e instanceof Balloom) return '1';
-//            else if (e instanceof Oneal) return '2';
+            else if (e instanceof Oneal) return '2';
             else if (e instanceof Doll) return '3';
             else if (e instanceof Minvo) return '4';
             else if (e instanceof Ghost) return '5';
