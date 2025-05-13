@@ -150,7 +150,7 @@ public class Board {
         game.isEndgame = true;
     }
 
-    public void saveHighScoreAfterDie() {
+    public void saveHighScoreAfterDieOrFinish() {
         if(getPoints() >= game.get_highscore()){
             game.set_highscore(getPoints());
             game.saveHighScore();
@@ -159,6 +159,7 @@ public class Board {
 
     public void finishGame() {
         screenToShow = 4;
+        saveHighScoreAfterDieOrFinish();
         game.resetScreenDelay();
         Game.playSE(8);
         game.pause();
