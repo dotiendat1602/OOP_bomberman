@@ -1,14 +1,47 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-abstract class Entity
-abstract class AnimatedEntity
-abstract class Character
-abstract class Enemy
+abstract class Entity {
+  #double x
+  #double y
+  #boolean removed
+  #Sprite sprite
+}
+abstract class AnimatedEntity {
+  #int animate
+  #int MAX_ANIMATE
+}
+
+abstract class Enemy {
+  #double MAX_STEPS
+  #double rest
+  #double steps
+  #int points
+  #double speed
+  #AI ai
+  #int finalAnimation
+  #Sprite deadSprite
+  -int currentDirect
+}
 abstract class Tile
 abstract class Item
-abstract class AI
-abstract class AIEnemy
+abstract class AI {
+   #Random random
+   #Board board
+   #HashMap<Character, Boolean> canGo
+   #char[][] map
+   #int[] hX
+   #int[] hY
+   #int m
+   #int n
+   #boolean[][] inDanger
+   #int[][] dangerDistance
+   #int[][] distanceFromEnemy
+}
+abstract class AIEnemy {
+   #boolean speed
+   #boolean allowSpeedUp
+}
 
 
 Entity <-- AnimatedEntity
@@ -17,35 +50,121 @@ Entity <-- Message
 Entity <-- Tile
 Entity <-- Flame
 
+class LayeredEntity {
+   #LinkedList<Entity> entities
+}
+class Message {
+   #String message
+   #int duration
+   #Color color
+   #int size
+}
+class Flame {
+   #Board board
+   #int direction
+   #int xOrigin
+   #int yOrigin
+   #FlameSegment[] flameSegments
+   -int radius
+}
+
 AnimatedEntity <-- Bomb
 AnimatedEntity <-- FlameSegment
 AnimatedEntity <-- Character
+class Bomb {
+   #double timeToExplode
+   +int timeAfter
+   #Board board
+   #Flame[] flames
+   #boolean exploded
+}
+class FlameSegment {
+   -boolean isLast
+   -int direction
+   -Board board
+}
+class Character {
+  #Board board
+  #int direct
+  #boolean alive
+  #boolean moving
+  +int timeAfter
+}
 
 Character <-- Bomber
 Character <-- Enemy
+class Bomber{
+  -Keyboard input
+  #int finalAnimation
+  #int timeBetweenPutBombs
+  -List<Bomb> bombs
+  -boolean render
+}
 
 Enemy <-- Balloom
-Enemy <-- Oneal
 Enemy <-- Doll
 Enemy <-- Minvo
 Enemy <-- Ghost
 Enemy <-- Kondoria
+class Doll {
+   -int ANIMATION_FRAME_DURATION
+   -DirectionGroup directionGroup
+}
+class Minvo {
+   -int ANIMATION_FRAME_DURATION
+   -DirectionGroup directionGroup
+}
+class Ghost {
+   -int ANIMATION_FRAME_DURATION
+   -DirectionGroup directionGroup
+}
+class Kondoria {
+   -int ANIMATION_FRAME_DURATION
+   -DirectionGroup directionGroup
+}
+enum DirectionGroup {
+  RIGHT
+  LEFT
+  -int[] directions
+}
 
 Tile <-- Item
 Tile <-- DestroyableTile
 Tile <-- Wall
 Tile <-- Grass
 Tile <-- Portal
+class Wall {}
+class Grass {}
+class Portal {}
+class DestroyableTile {
+   -int MAX_ANIMATE
+   -int animate
+   #boolean destroyed
+   #int timeToDisappear
+   #Sprite belowSprite
+}
 
 Item <-- BombItem
 Item <-- FlameItem
 Item <-- SpeedItem
+class BombItem {}
+class FlameItem {}
+class SpeedItem {}
 
 DestroyableTile <-- Brick
+class Brick {}
 
 AI <-- AIEnemy
 
 AIEnemy <-- AILow
 AIEnemy <-- AIMedium
 AIEnemy <-- AIHigh
+class AILow {}
+class AIMedium {
+   -Enemy enemy
+   -boolean canChangeSpeed
+}
+class AIHigh {
+   -Enemy enemy
+}
 @enduml

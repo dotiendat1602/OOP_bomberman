@@ -14,7 +14,7 @@ public class Level extends JMenu {
         super("Level");
         this.frame = frame;
 
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 5; i++) {
             add(createLevelMenuItem(i));
         }
     }
